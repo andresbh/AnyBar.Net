@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -31,10 +33,53 @@ namespace anyBar
                     var cmd = input.ToLowerInvariant();
                     Dispatcher.Invoke(() =>
                     {
-                        if (Icons.Commands.ContainsKey(cmd))
-                            notifyIcon.Icon = Icons.Commands[cmd]();
+                        SetIcon(cmd);
                     });
                 }
+            }
+        }
+
+        private void SetIcon(string cmd)
+        {
+            if (Icons.Commands.ContainsKey(cmd))
+                notifyIcon.Icon = Icons.Commands[cmd]();
+            else
+            {
+                var dir = AnyBarDir();
+                if (dir.Exists)
+                {
+                    var file = FindPngIcon(cmd, dir);
+                    if (file != null)
+                        TrySetIcon(file);
+                }
+            }
+        }
+
+        private static FileInfo FindPngIcon(string cmd, DirectoryInfo dir)
+        {
+            return dir.GetFiles($"{cmd}.png")
+                .FirstOrDefault();
+        }
+
+        private static DirectoryInfo AnyBarDir()
+        {
+            return new DirectoryInfo(AnyBarPath());
+        }
+
+        private static string AnyBarPath()
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".AnyBar");
+        }
+
+        private void TrySetIcon(FileInfo file)
+        {
+            try
+            {
+                notifyIcon.Icon = Icons.FromImage(file);
+            }
+            catch
+            {
+                
             }
         }
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 
 namespace anyBar
 {
@@ -59,6 +60,11 @@ namespace anyBar
                         g.DrawEllipse(new Pen(b, 3), 4, 4, 24, 24 );
                 }
             }
+        }
+
+        public static Icon FromImage(FileInfo file)
+        {
+            return Icon.FromHandle(new Bitmap(file.FullName).GetHicon());
         }
     }
 }
