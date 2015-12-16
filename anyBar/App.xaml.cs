@@ -8,7 +8,6 @@ namespace anyBar
         {
             MainWindow wnd = new MainWindow();
             wnd.Init(GetPort(e.Args, 1738));
-            wnd.Show();
         }
 
         private int GetPort(string[] args, int @default)
